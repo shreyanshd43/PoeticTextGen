@@ -17,6 +17,9 @@ index_to_char = dict((i, c) for i, c in enumerate(characters))
 SEQ_LENGTH = 40
 STEP_SIZE = 3
 
+
+'''
+
 sentences = []
 next_characters = []
 
@@ -37,8 +40,47 @@ model.add(LSTM(128, input_shape = (SEQ_LENGTH, len(characters))))
 model.add(Dense(len(characters)))
 model.add(Activation('softmax'))
 
-model.compile(loss = 'categorical_crossentropy', optimizer = RMSprop(lr = 0.01))
+model.compile(loss = 'categorical_crossentropy', optimizer = RMSprop(learning_rate = 0.01))
 
 model.fit(x, y, batch_size = 256, epochs = 4)
 
 model.save('poetictextgenerator.model')
+
+'''
+
+model = tf.keras.models.load_model('poetictextgenerator.model')
+
+def sample(preds, temperature = 1.0):
+    preds = np.asarray(preds).astype('float64')
+    preds = np.log(preds) / temperature
+    exp_preds = np.exp(preds)
+    preds = exp_preds / np.sum(exp_preds)
+    probas = np.random.multinomial(1, preds, 1)
+    return np.argmax(probas)
+
+def generate_text(length, temperature):
+    start_index = random.randint(0, len(text) - SEQ_LENGTH - 1)
+    generated = ''
+    sentence = text[start_index: start_index + SEQ_LENGTH]
+    generated += sentence
+    for i in range(length):
+        x_pred = np.zeros((1, SEQ_LENGTH, len(characters)))
+        for t, character in enumerate(sentence):
+            x_pred[0, t, char_to_index[character]] = 1
+        preds = model.predict(x_pred, verbose = 0)[0]
+        next_index = sample(preds, temperature)
+        next_character = index_to_char[next_index]
+        generated += next_character
+        sentence = sentence[1:] + next_character
+    return generated
+
+print('---------0.2---------')
+print(generate_text(300, 0.2))
+print('---------0.4---------')
+print(generate_text(300, 0.4))
+print('---------0.6---------')
+print(generate_text(300, 0.6))
+print('---------0.8---------')
+print(generate_text(300, 0.8))
+print('---------1.0---------')
+print(generate_text(300, 1.0))
