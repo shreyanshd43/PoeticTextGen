@@ -24,5 +24,8 @@ The code is divided into the following sections:
 - **'STEP_SIZE':** The step size for creating training sequences.
 - **'temperature':** A parameter controlling the creativity of generated text. Lower values (e.g., 0.2) produce more "experimental" text, while higher values (e.g., 1.0) produce more "safe" text.
 
+# Acknowledgements #
+This project is inspired by and largely follows the NeuralNine tutorial
+
 # Results #
 The script will display generated poetic text for different temperature values, allowing you to observe the impact of temperature on the creativity and randomness of the generated text.
